@@ -44,6 +44,65 @@ let g:bufferline_echo = 0
      let g:airline_symbols = {}
      endif
 
+
+"netrw = NERDTREE OH SHIT
+let g:netrw_liststyle=3         " tree (change to 0 for thin)
+let g:netrw_banner=0            " no banner
+let g:netrw_altv=1              " open files on right
+let g:netrw_preview=1           " open previews vertically
+
+fun! VexToggle(dir)
+  if exists("t:vex_buf_nr")
+    call VexClose()
+  else
+    call VexOpen(a:dir)
+  endif
+endf
+
+fun! VexOpen(dir)
+  let g:netrw_browse_split=4    " open files in previous window
+  let vex_width = 25
+
+  execute "Vexplore " . a:dir
+  let t:vex_buf_nr = bufnr("%")
+  wincmd H
+
+  call VexSize(vex_width)
+endf
+
+fun! VexSize(vex_width)
+  execute "vertical resize" . a:vex_width
+  set winfixwidth
+  call NormalizeWidths()
+endf
+
+fun! NormalizeWidths()
+  let eadir_pref = &eadirection
+  set eadirection=hor
+  set equalalways! equalalways!
+  let &eadirection = eadir_pref
+endf
+fun! VexClose()
+  let cur_win_nr = winnr()
+  let target_nr = ( cur_win_nr == 1 ? winnr("#") : cur_win_nr )
+
+  1wincmd w
+  close
+  unlet t:vex_buf_nr
+
+  execute (target_nr - 1) . "wincmd w"
+  call NormalizeWidths()
+endf
+nnoremap <Leader><Tab> :call VexToggle(getcwd())<CR>
+augroup NetrwGroup
+  autocmd! BufEnter * call NormalizeWidths()
+augroup END
+"
+"augroup ProjectDrawer
+  "autocmd!
+  "autocmd VimEnter * :Vexplore
+"augroup END
+
 "behave mswin
 set t_Co=256
 set cinoptions=g0
@@ -224,8 +283,16 @@ augroup vimrc
 augroup END
 
 "Vim-latex compile mode
+
 let g:Tex_CompileRule_pdf='pdflatex -interaction=nonstopmode $*'
+let g:Tex_MultipleCompileFormats='pdf,bibtex,pdf'
 let g:Tex_DefaultTargetFormat='pdf'
+
+"Only apple shit:
+let g:Tex_TreatMacViewerAsUNIX = 1
+let g:Tex_ViewRule_pdf = 'open -a Preview'
+let g:Tex_ViewRule_dvi = 'open -a xdvi'
+
 "split navigations
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
@@ -243,7 +310,7 @@ set splitright
 inoremap <C-s> <esc>:w!<CR>
 nnoremap <C-s> :w!<CR>
 nnoremap <space> za
-nnoremap <C-n> :Vex<CR>
+nnoremap <Leader><Tab> :call VexToggle(getcwd())<CR>
 map <C-p> "+p
 map <C-c> "+y
 
