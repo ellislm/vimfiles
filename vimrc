@@ -238,7 +238,7 @@ let Tlist_Ctags_Cmd = "/usr/bin/ctags"
 let Tlist_WinWidth = 50
 autocmd FileType cpp map <F4> :TlistToggle<cr>
 autocmd FileType cpp map <buffer> <F8> :!/usr/bin/ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR><CR>
-autocmd FileType cpp nmap <F6> :TagbarToggle<CR>
+autocmd FileType cpp nmap <leader>t :TagbarToggle<CR>
 se tags+=~/.ctags/tags
 
 
@@ -314,7 +314,7 @@ nnoremap <Leader><Tab> :call VexToggle(getcwd())<CR>
 map <C-p> "+p
 map <C-c> "+y
 
-inoremap <C-\> <esc>
+inoremap <C-space> <esc>
 nnoremap <C-T> :Files<CR>
 
 
@@ -322,6 +322,8 @@ nnoremap <C-T> :Files<CR>
 set hidden
 
 set history=100
+let g:ycm_min_num_of_chars_for_completion = 0
+let g:ycm_auto_trigger = 1
 let g:ctrlspace_use_mouse_and_arrows_in_term=0
 let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
 let g:ycm_autoclose_preview_window_after_completion=1
@@ -330,7 +332,7 @@ let g:ycm_semantic_triggers = {
 \   'rosmsg,rossrv,rosaction' : ['re!^', '/'],
 \ }
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
+set clipboard=unnamed
 "py << EOF
 "import os
 "import sys
