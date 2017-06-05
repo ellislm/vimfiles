@@ -27,6 +27,7 @@ call plug#begin('~/.vim/plugged')
  Plug 'bling/vim-bufferline'
  Plug 'jeaye/color_coded'
  Plug 'lazywei/vim-matlab'
+ Plug 'dylanaraps/wal'
 call plug#end()
 
 set nocompatible
@@ -125,7 +126,8 @@ command! RevBG call ReverseBackground()
 nnoremap <silent> <leader>r :RevBG<cr>
 
 let g:solarized_termcolors=256
-colorscheme solarized
+colorscheme wal
+"colorscheme solarized
 "colorscheme gruvbox
 
 set guifont=Hack
