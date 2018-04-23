@@ -5,75 +5,122 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
- Plug 'scrooloose/nerdcommenter'
- Plug 'morhetz/gruvbox'
+"
+" Git Tools
  Plug 'tpope/vim-fugitive'
  Plug 'airblade/vim-gitgutter'
+
+ " Navigation, tools, misc.
+ "
  Plug 'tpope/vim-surround'
- Plug 'taketwo/vim-ros'
+ Plug 'scrooloose/nerdcommenter'
  Plug 'ntpeters/vim-better-whitespace'
- Plug 'junegunn/goyo.vim'
- Plug 'junegunn/limelight.vim'
  Plug 'christoomey/vim-tmux-navigator'
- Plug 'vim-airline/vim-airline'
- Plug 'vim-airline/vim-airline-themes'
- Plug 'vim-latex/vim-latex'
- Plug 'bling/vim-bufferline'
- Plug 'lazywei/vim-matlab'
  Plug 'tmhedberg/SimpylFold'
- Plug 'mindriot101/vim-yapf'
- Plug 'Yggdroot/indentLine' " vertical lines for indent
  Plug 'brooth/far.vim' " Search and Replace
- Plug 'donRaphaco/neotex'
  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
  Plug 'junegunn/fzf.vim'
- "Plug 'iCyMind/NeoSolarized'
- Plug 'freeo/vim-kalisi'
  Plug 'majutsushi/tagbar'
  Plug 'scrooloose/nerdtree'
- Plug 'roxma/nvim-completion-manager' " Vim Completion
- Plug 'ludovicchabant/vim-gutentags' " Autogenerate ctags
  Plug 'neomake/neomake' " Asyncrhonous Linting / Make
- Plug 'SirVer/ultisnips'
- "Plug 'vim-ctrlspace/vim-ctrlspace'
- "Plug 'roxma/ncm-clang'
+ " Text Completion
+ "
+ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+ Plug 'zchee/deoplete-jedi'
+ Plug 'zchee/deoplete-clang'
+ Plug 'Shougo/neoinclude.vim'
+ Plug 'ludovicchabant/vim-gutentags' " Autogenerate ctags
+
+ " Snippets
+Plug 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'
+
+"
+" Themes and Aesthetics
+ Plug 'junegunn/goyo.vim'
+ Plug 'junegunn/limelight.vim'
+ Plug 'morhetz/gruvbox'
+ Plug 'bling/vim-bufferline'
+ Plug 'vim-airline/vim-airline'
+ Plug 'vim-airline/vim-airline-themes'
+ Plug 'Yggdroot/indentLine' " vertical lines for indent
+ Plug 'freeo/vim-kalisi'
+
+ " Specifice Filetype tools
+ Plug 'taketwo/vim-ros'
+ Plug 'vim-latex/vim-latex'
+ Plug 'lazywei/vim-matlab'
+ Plug 'mindriot101/vim-yapf'
+ Plug 'donRaphaco/neotex'
+ Plug 'sbdchd/neoformat'
+ Plug 'octol/vim-cpp-enhanced-highlight'
+"Plug 'rhysd/vim-clang-format'
+"
  " For REPL Support for Python and others
  Plug 'BurningEther/iron.nvim', {'do': ':UpdateRemotePlugins'}
+
 call plug#end()
+
 let g:tmux_navigator_no_mappings = 1
 set termguicolors
-
+set nocompatible
+set timeout timeoutlen=3000 ttimeoutlen=100
 set autochdir "set current working dir with open file
 set mouse=a
 "
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+set runtimepath+=~/.vim/snippets/
 let g:UltiSnipsExpandTrigger="<leader>u"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsJumpForwardTrigger="<Tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
+let g:UltiSnipsSnippetDirectories=["UltiSnips",$HOME.'/.vim/custom_snippets']
+let g:UltiSnipsSnippetsDir=$HOME.'/.vim/custom_snippets'
 
-"nvim completion manager start with only one letter
-" nvim complete use Tab
-let g:cm_refresh_default_min_word_len=1
+"
+" DEOPLETE AND CODE COMPLETION SETTINGS
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#clang#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
+let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-" Ctrl-space setup to use AG
-if executable("ag")
-    let g:ctrlspaceglobcommand = 'ag -l --nocolor -g ""'
-endif
-" ctrlspace rebind for neovim
-let g:ctrlspacedefaultmappingkey = "<c-space> "
+" NEOMAKE
+let g:neomake_cpp_enabled_makers = ['gcc']
+let g:neomake_cpp_clang_maker = {
+   \ 'exe': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++',
+   \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
+   \ }
 
-""
-"" Syntastic
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
 
-let g:rustfmt_autosave = 1
-set nocompatible
-set timeout timeoutlen=3000 ttimeoutlen=100
-"airline Settings
+"  C++ Syntax Highlighting
+"
+"let g:cpp_no_function_highlight = 1
+"let g:cpp_member_variable_highlight = 0
+"let g:cpp_experimental_simple_template_highlight = 0
+"let g:cpp_concepts_highlight = 0
+"
+" OPEN VIMRC IN HORIZONTAL SPLIT
+" mapping that opens .vimrc in a split for quick editing
+nnoremap <leader>ev :vsplit $HOME/.vim/vimrc<CR>
+" mapping that sources the vimrc in the current file
+nnoremap <leader>sv :source $HOME/.vim/vimrc<CR>
+" Clang format - auto formatting
+
+
+"let g:clang_format#command = 'clang-format'
+"let g:clang_format#style_options = {
+            "\ "BreakBeforeBraces" : "Attach",
+            "\ "UseTab" : "Never",
+            "\ "IndentWidth" : 4,
+            "\ "ColumnLimit" : 100,
+            "\ "AccessModifierOffset" : -4,
+            "\ "AllowShortIfStatementsOnASingleLine" : "false",
+            "\ "AllowShortFunctionsOnASingleLine" : "false",
+            "\}
+
+"
+"Airline Settings
+"
 let g:airline_powerline_fonts = 1
 set laststatus=2
 let g:airline_theme='kalisi'
@@ -120,7 +167,6 @@ function! ReverseBackground()
   endif
 endfunction
 command! RevBG call ReverseBackground()
-nnoremap <silent> <leader>r :RevBG<cr>
 
 "let g:solarized_termcolors=256
 "colorscheme NeoSolarized
@@ -177,77 +223,10 @@ filetype indent on
 source $VIMRUNTIME/macros/matchit.vim
 autocmd BufEnter *.m    compiler mlint
 
-
-runtime macros/matchit.vim
-"""""""""""""""""""""""""""""""""
-" line wrapping and movements
-"""""""""""""""""""""""""""""""""
-
-" toggle wrapping with \w
-noremap <silent> <Leader>w :call ToggleWrap()<CR>
-function! ToggleWrap()
-  if &wrap
-    echo "Wrap OFF"
-    call UnwrapIt()
-  else
-    echo "Wrap ON"
-    call WrapIt()
-  endif
-endfunction
-
-function! WrapIt()
-  set wrap linebreak
-  set virtualedit=
-  set breakat=\ ^I!@*-+;:,./?       " when wrapping, break at these characters (requires linbreak, see above)
-  set showbreak=                    " character to show that a line is wrapped
-  setlocal display+=lastline
-  noremap  <buffer> <silent> k gk
-  noremap  <buffer> <silent> j gj
-  noremap  <buffer> <silent> <Up>   gk
-  noremap  <buffer> <silent> <Down> gj
-  noremap  <buffer> <silent> <Home> g<Home>
-  noremap  <buffer> <silent> <End>  g<End>
-  inoremap <buffer> <silent> <Up>   <C-o>gk
-  inoremap <buffer> <silent> <Down> <C-o>gj
-  inoremap <buffer> <silent> <Home> <C-o>g<Home>
-  inoremap <buffer> <silent> <End>  <C-o>g<End>
-endfunction
-
-function! UnwrapIt()
-  set nowrap
-  set virtualedit=all
-  silent! nunmap <buffer> j
-  silent! nunmap <buffer> k
-  silent! nunmap <buffer> <Up>
-  silent! nunmap <buffer> <Down>
-  silent! nunmap <buffer> <Home>
-  silent! nunmap <buffer> <End>
-  silent! iunmap <buffer> <Up>
-  silent! iunmap <buffer> <Down>
-  silent! iunmap <buffer> <Home>
-  silent! iunmap <buffer> <End>
-endfunction
-
-if &wrap
-  call WrapIt()
-endif
-
-autocmd BufRead,BufNewFile *.tex call WrapIt()
-",let g:vimtex_fold_enabled = 1,let g:vimtex_complete_close_braces = 1,
-
-"Not sure but I think this is important
-"command! -range SwapArgs <line1>,<line2>s/(\([^,]\+\),\s*\([^,)]\+\)/(\2, \1/ | let @/ = ""
-
+" ???
 let g:loaded_ros = 1
-
 let g:replay_record = 1
 let g:replay_speed = 300
-
-function! FU()
-  r~/.vim/fu.txt
-endfunction
-
-nmap  :call FU()<CR>
 
 "Zenmode
 nnoremap <silent> <leader>z :Goyo<cr>
@@ -295,10 +274,12 @@ nnoremap <silent> <C-,> <c-w> < <c-w> < <c-w> <
 nnoremap <silent> <C-.> <c-w> > <c-w> > <c-w> >
 
 " FZF Key-bindings
-nnoremap <silent> <leader>; :Commands<cr>
+nnoremap <silent> ; :Commands<cr>
 nnoremap <silent> <leader>b :Buffers<cr>
 nnoremap <silent> <leader>t :Tags<cr>
 nnoremap <silent> <leader>a :Ag<cr>
+nnoremap <silent> <leader>h :History<cr>
+nnoremap <silent> <leader>f :Files<CR>
 "map <silent> ; :Commands<cr>
 
 set splitbelow
@@ -313,7 +294,6 @@ map <C-p> "+p
 map <C-c> "+y
 
 inoremap <C-space> <esc>
-nnoremap <C-T> :Files<CR>
 
 nnoremap <leader>y :Yapf<cr>
 tnoremap <Esc> <C-\><C-n>
@@ -328,10 +308,8 @@ set hidden
 set history=100
 set clipboard+=unnamedplus
 
-" Colored line for 120 characters in column
-set colorcolumn=120
-" Close buffer but keep window
-command Bd bp | sp | bn | bd
+" Colored line for 80 characters in column
+set colorcolumn=80
 
 nnoremap <C-P> :bnext<Cr>
 nnoremap <C-S-P> :bnext<Cr>
@@ -347,9 +325,15 @@ call neomake#configure#automake('w') " run on save
 " TAGBAR
 nmap <C-b> :TagbarToggle<CR>
 
-" Search and replace word under cursor using F4
+" Search and replace word under cursor with Far \s, then replace the words with
+" \r
 nnoremap <leader>s :Far <c-r><c-w> <c-r><c-w>
+nnoremap <leader>r :Fardo<Cr>:q<Cr>
 
+" TAB KEYBINDINGS
 nnoremap tn :tabNext<Cr>
 nnoremap tp :tabprevious<Cr>
 nnoremap tc :tabnew<Cr>
+nnoremap tx :tabclose<Cr>
+
+let g:neosnippet#enable_completed_snippet=1
