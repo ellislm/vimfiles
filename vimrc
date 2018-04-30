@@ -78,18 +78,30 @@ let g:UltiSnipsSnippetsDir=$HOME.'/.vim/custom_snippets'
 
 "
 " DEOPLETE AND CODE COMPLETION SETTINGS
+" NEOMAKE
+let g:neomake_cpp_enabled_makers = ['gcc']
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#clang#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
-let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
+
+if has("unix")
+  if system('uname')=~'Darwin'
+    let g:deoplete#sources#clang#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
+    let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
+    let g:neomake_cpp_clang_maker = {
+       \ 'exe': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++',
+       \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
+       \ }
+  else
+    let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
+    let g:deoplete#sources#clang#clang_header='/usr/lib/llvm-3.8/lib/clang'
+    let g:neomake_cpp_clang_maker = {
+       \ 'exe': '/usr/bin/c++',
+       \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
+       \ }
+  endif
+endif
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-" NEOMAKE
-let g:neomake_cpp_enabled_makers = ['gcc']
-let g:neomake_cpp_clang_maker = {
-   \ 'exe': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++',
-   \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
-   \ }
 
 
 "  C++ Syntax Highlighting
@@ -337,3 +349,55 @@ nnoremap tc :tabnew<Cr>
 nnoremap tx :tabclose<Cr>
 
 let g:neosnippet#enable_completed_snippet=1
+
+"Latex Tex Wrapping
+
+" toggle wrapping with \w
+noremap <silent> <Leader>w :call ToggleWrap()<CR>
+function! ToggleWrap()
+  if &wrap
+    echo "Wrap OFF"
+    call UnwrapIt()
+  else
+    echo "Wrap ON"
+    call WrapIt()
+  endif
+endfunction
+
+function! WrapIt()
+  set wrap linebreak
+  set virtualedit=
+  set breakat=\ ^I!@*-+;:,./?       " when wrapping, break at these characters (requires linbreak, see above)
+  set showbreak=                    " character to show that a line is wrapped
+  setlocal display+=lastline
+  noremap  <buffer> <silent> k gk
+  noremap  <buffer> <silent> j gj
+  noremap  <buffer> <silent> <Up>   gk
+  noremap  <buffer> <silent> <Down> gj
+  noremap  <buffer> <silent> <Home> g<Home>
+  noremap  <buffer> <silent> <End>  g<End>
+  inoremap <buffer> <silent> <Up>   <C-o>gk
+  inoremap <buffer> <silent> <Down> <C-o>gj
+  inoremap <buffer> <silent> <Home> <C-o>g<Home>
+  inoremap <buffer> <silent> <End>  <C-o>g<End>
+endfunction
+
+function! UnwrapIt()
+  set nowrap
+  set virtualedit=all
+  silent! nunmap <buffer> j
+  silent! nunmap <buffer> k
+  silent! nunmap <buffer> <Up>
+  silent! nunmap <buffer> <Down>
+  silent! nunmap <buffer> <Home>
+  silent! nunmap <buffer> <End>
+  silent! iunmap <buffer> <Up>
+  silent! iunmap <buffer> <Down>
+  silent! iunmap <buffer> <Home>
+  silent! iunmap <buffer> <End>
+endfunction
+
+if &wrap
+  call WrapIt()
+endif
+autocmd BufRead,BufNewFile *.tex call WrapIt()
