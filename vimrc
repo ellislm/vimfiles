@@ -165,10 +165,6 @@ set cinoptions=g0
 set cino+=(0,W4,t0
 set complete=.,w,b,u,t,i
 
-" Fix background color on gui vim
-"highlight Normal ctermbg=NONE
-"highlight nonText ctermbg=NONE
-set background=light
 
 "" Function to reverse background
 function! ReverseBackground()
@@ -180,12 +176,16 @@ function! ReverseBackground()
 endfunction
 command! RevBG call ReverseBackground()
 
-"let g:solarized_termcolors=256
+" Fix background color on gui vim
+let g:solarized_termcolors=256
 "colorscheme NeoSolarized
 colorscheme kalisi
 "set bg=light
 "colorscheme brogrammer
 "colorscheme gruvbox
+au ColorScheme * hi Normal ctermbg=none guibg=none
+au ColorScheme myspecialcolors hi Normal ctermbg=red guibg=red
+set background=dark
 
 set guifont=Hack
 set guioptions-=m  "remove menu bar
