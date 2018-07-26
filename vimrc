@@ -7,57 +7,80 @@ endif
 call plug#begin('~/.vim/plugged')
 "
 " Git Tools
- Plug 'tpope/vim-fugitive'
- Plug 'airblade/vim-gitgutter'
+  Plug 'tpope/vim-fugitive'
+  Plug 'airblade/vim-gitgutter'
 
- " Navigation, tools, misc.
- "
- Plug 'tpope/vim-surround'
- Plug 'scrooloose/nerdcommenter'
- Plug 'ntpeters/vim-better-whitespace'
- Plug 'christoomey/vim-tmux-navigator'
- Plug 'tmhedberg/SimpylFold'
- Plug 'brooth/far.vim' " Search and Replace
- Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
- Plug 'junegunn/fzf.vim'
- Plug 'majutsushi/tagbar'
- Plug 'scrooloose/nerdtree'
- Plug 'neomake/neomake' " Asyncrhonous Linting / Make
- " Text Completion
- "
- Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
- Plug 'zchee/deoplete-jedi'
- Plug 'zchee/deoplete-clang'
- Plug 'Shougo/neoinclude.vim'
- Plug 'ludovicchabant/vim-gutentags' " Autogenerate ctags
-
- " Snippets
-Plug 'honza/vim-snippets'
-Plug 'SirVer/ultisnips'
-
+" Navigation, tools, misc.
 "
+  Plug 'tpope/vim-surround'
+  Plug 'scrooloose/nerdcommenter'
+  Plug 'ntpeters/vim-better-whitespace'
+  Plug 'christoomey/vim-tmux-navigator'
+  Plug 'tmhedberg/SimpylFold'
+  Plug 'brooth/far.vim' " Search and Replace
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
+  Plug 'majutsushi/tagbar'
+  Plug 'scrooloose/nerdtree'
+  Plug 'easymotion/vim-easymotion'
+  Plug 'hetmankp/vim-signature'
+  Plug 'francoiscabrol/ranger.vim'
+  Plug 'rbgrouleff/bclose.vim'
+  Plug 'tpope/vim-repeat'
+" Text Completion
+"
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'zchee/deoplete-jedi'
+  Plug 'zchee/deoplete-clang'
+  Plug 'Shougo/neoinclude.vim'
+  Plug 'ludovicchabant/vim-gutentags', {'tag':'v1.0.0'} " Autogenerate ctags
+
+" Snippets
+  Plug 'honza/vim-snippets'
+  Plug 'SirVer/ultisnips'
+
 " Themes and Aesthetics
- Plug 'junegunn/goyo.vim'
- Plug 'junegunn/limelight.vim'
- Plug 'morhetz/gruvbox'
- Plug 'bling/vim-bufferline'
- Plug 'vim-airline/vim-airline'
- Plug 'vim-airline/vim-airline-themes'
- Plug 'Yggdroot/indentLine' " vertical lines for indent
- Plug 'freeo/vim-kalisi'
+  Plug 'junegunn/goyo.vim'
+  Plug 'junegunn/limelight.vim'
+  Plug 'morhetz/gruvbox'
+  Plug 'bling/vim-bufferline'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+  Plug 'Yggdroot/indentLine' " vertical lines for indent
+  Plug 'freeo/vim-kalisi'
 
- " Specifice Filetype tools
- Plug 'taketwo/vim-ros'
- Plug 'vim-latex/vim-latex'
- Plug 'lazywei/vim-matlab'
- Plug 'mindriot101/vim-yapf'
- Plug 'donRaphaco/neotex'
- Plug 'sbdchd/neoformat'
- Plug 'octol/vim-cpp-enhanced-highlight'
-"Plug 'rhysd/vim-clang-format'
-"
- " For REPL Support for Python and others
- Plug 'BurningEther/iron.nvim', {'do': ':UpdateRemotePlugins'}
+" Syntax Highlighting for all Languages
+  Plug 'sheerun/vim-polyglot'
+
+" Specifice Filetype tools
+  Plug 'taketwo/vim-ros'
+  Plug 'lervag/vimtex'
+  Plug 'lazywei/vim-matlab'
+  Plug 'mindriot101/vim-yapf'
+  Plug 'sbdchd/neoformat'
+  Plug 'w0rp/ale'
+
+  " Vim Latex
+  "Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+  Plug 'lervag/vimtex'
+  "Plug 'donRaphaco/neotex'
+  Plug 'mhinz/neovim-remote' " Needed for Vimtex
+
+" Org Mode
+  Plug 'jceb/vim-orgmode'
+  Plug 'vim-scripts/utl.vim'
+  Plug 'mattn/calendar-vim'
+  Plug 'vim-scripts/SyntaxRange'
+  Plug 'tpope/vim-speeddating'
+
+" Vim Wiki
+  Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
+  Plug 'vim-pandoc/vim-pandoc-syntax'
+  Plug 'vim-pandoc/vim-pandoc'
+  Plug 'plasticboy/vim-markdown'
+
+" For REPL Support for Python and others
+  Plug 'BurningEther/iron.nvim', {'do': ':UpdateRemotePlugins'}
 
 call plug#end()
 
@@ -79,43 +102,48 @@ let g:UltiSnipsSnippetsDir=$HOME.'/.vim/custom_snippets'
 "
 " DEOPLETE AND CODE COMPLETION SETTINGS
 " NEOMAKE
-let g:neomake_cpp_enabled_makers = ['gcc']
 let g:deoplete#enable_at_startup = 1
+" Use tab to cycle through list
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+let g:deoplete#enable_smart_case = 1
+
+" Disable the candidates in Comment/String syntaxes.
+call deoplete#custom#source('_',
+            \ 'disabled_syntaxes', ['Comment', 'String'])
+
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 if has("unix")
   if system('uname')=~'Darwin'
+    "let g:chromatica#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
     let g:deoplete#sources#clang#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
     let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
-    let g:neomake_cpp_clang_maker = {
-       \ 'exe': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++',
-       \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
-       \ }
   else
+    "let g:chromatica#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
     let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
     let g:deoplete#sources#clang#clang_header='/usr/lib/llvm-3.8/lib/clang'
-    let g:neomake_cpp_clang_maker = {
-       \ 'exe': '/usr/bin/c++',
-       \ 'args': ['-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion', '-std=c++11'],
-       \ }
   endif
 endif
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" DEOPLETE
 
 
 
 "  C++ Syntax Highlighting
 "
 "let g:cpp_no_function_highlight = 1
-"let g:cpp_member_variable_highlight = 0
-"let g:cpp_experimental_simple_template_highlight = 0
-"let g:cpp_concepts_highlight = 0
-"
+let g:cpp_member_variable_highlight = 1
+"let g:cpp_experimental_template_highlight=1
+"let g:cpp_experimental_template_highlight = 1
+"let g:cpp_concepts_highlight = 1
+
 " OPEN VIMRC IN HORIZONTAL SPLIT
 " mapping that opens .vimrc in a split for quick editing
 nnoremap <leader>ev :vsplit $HOME/.vim/vimrc<CR>
 " mapping that sources the vimrc in the current file
-nnoremap <leader>sv :source $HOME/.vim/vimrc<CR>
+"nnoremap <leader>sv :source $HOME/.vim/vimrc<CR>
+"
 " Clang format - auto formatting
 
 
@@ -137,23 +165,27 @@ let g:airline_powerline_fonts = 1
 set laststatus=2
 let g:airline_theme='kalisi'
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
 
+
+" Get rid of encoding
+let g:airline_section_y=''
 let g:bufferline_echo = 0
- let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 1
 
  if !exists('g:airline_symbols')
      let g:airline_symbols = {}
-     endif
+ endif
 
 " Strip whitespace on save
 let g:better_whitespace_enabled=1
 let g:strip_whitespace_on_save=1
-"
+
 "netrw = NERDTREE OH SHIT
-let g:NERDTreeQuitOnOpen = 1
+"let g:NERDTreeQuitOnOpen = 1
 " nerdtree open default if vim opened without file
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+"autocmd StdinReadPre * let s:std_in=1
+"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 let g:netrw_liststyle=3         " tree (change to 0 for thin)
 let g:netrw_banner=0            " no banner
@@ -177,22 +209,16 @@ endfunction
 command! RevBG call ReverseBackground()
 
 " Fix background color on gui vim
-let g:solarized_termcolors=256
+"let g:solarized_termcolors=256
 "colorscheme NeoSolarized
 colorscheme kalisi
 "set bg=light
 "colorscheme brogrammer
 "colorscheme gruvbox
+
 au ColorScheme * hi Normal ctermbg=none guibg=none
 au ColorScheme myspecialcolors hi Normal ctermbg=red guibg=red
 set background=dark
-
-set guifont=Hack
-set guioptions-=m  "remove menu bar
-set guioptions-=T  "remove toolbar
-set guioptions-=r  "remove right-hand scroll bar
-set guioptions-=l  "remove left-hand scroll bar
-set guioptions-=L  "remove left-hand scroll bar
 
 set foldmethod=syntax
 set foldlevel=1000
@@ -215,6 +241,7 @@ set backupdir=~/.vim/backup
 
 " Set the filetypes correctly
 autocmd BufRead,BufNewFile *.launch setfiletype roslaunch
+"autocmd BufRead,BufNewFile *.rosinstall setfiletype yaml
 autocmd BufRead,BufNewFile *.urdf setfiletype xml
 autocmd BufRead,BufNewFile *.xacro setfiletype xml
 autocmd BufRead,BufNewFile *.cpf setfiletype xml
@@ -225,49 +252,29 @@ autocmd BufRead,BufNewFile *.moin setfiletype moin
 autocmd BufRead,BufNewFile *.ops setfiletype cpp
 autocmd BufRead,BufNewFile *.msg setfiletype ruby
 autocmd BufRead,BufNewFile *.srv setfiletype ruby
-autocmd BufRead,BufNewFile *.rosinstall setfiletype yaml
+
+autocmd BufRead,BufNewFile *.cpp set colorcolumn=80
+autocmd BufRead,BufNewFile *.cc set colorcolumn=80
+autocmd BufRead,BufNewFile *.cpp set colorcolumn=80
+autocmd BufRead,BufNewFile *.h set colorcolumn=80
+autocmd BufRead,BufNewFile *.py set colorcolumn=80
+autocmd BufRead,BufNewFile *.tpp set filetype=cpp
 
 autocmd BufRead,BufNewFile m,mat setlocal comments+=:%
 au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
 
 "matlab Tools Code
-filetype indent on
+filetype plugin indent on
 source $VIMRUNTIME/macros/matchit.vim
 autocmd BufEnter *.m    compiler mlint
 
-" ???
-let g:loaded_ros = 1
-let g:replay_record = 1
-let g:replay_speed = 300
-
 "Zenmode
-nnoremap <silent> <leader>z :Goyo<cr>
+nnoremap <silent> <leader>g :Goyo<cr>
 let g:goyo_margin_top = 2
 let g:goyo_margin_bottom = 2
 let g:goyo_width = 81
 autocmd! User GoyoEnter Limelight
 autocmd! User GoyoLeave Limelight!
-
-""Overrides Ctrl-J of vim-latex
-"augroup vimrc
-    "au!
-    "au VimEnter * unmap <C-j>
-    "au VimEnter * noremap <C-j> <C-w>j
-    "au VimEnter * vmap <C-g> <Plug>IMAP_JumpForward
-    "au VimEnter * nmap <C-g> <Plug>IMAP_JumpForward
-    "au VimEnter * imap <C-g> <Plug>IMAP_JumpForward
-"augroup END
-
-"Vim-latex compile mode
-"
-" Compiler and viewer settings
-"let g:tex_flavor='latex'
-"let g:Tex_CompileRule_pdf = 'latexmk -pdf $*'
-"let g:Tex_DefaultTargetFormat='pdf'
-"let g:Tex_MultipleCompileFormats='pdf'
-"let g:Tex_CompileRule_pdf='pdflatex -interaction=nonstopmode $*'
-"let g:Tex_MultipleCompileFormats='pdf,bibtex,pdf'
-"let g:Tex_DefaultTargetFormat='pdf'
 
 ""Only apple shit:
 "let g:Tex_TreatMacViewerAsUNIX = 1
@@ -307,7 +314,7 @@ map <C-c> "+y
 
 inoremap <C-space> <esc>
 
-nnoremap <leader>y :Yapf<cr>
+nnoremap <leader>y :Neoformat<cr>
 tnoremap <Esc> <C-\><C-n>
 tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
 tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
@@ -321,18 +328,12 @@ set history=100
 set clipboard+=unnamedplus
 
 " Colored line for 80 characters in column
-set colorcolumn=80
+"set colorcolumn=80
 
 nnoremap <C-P> :bnext<Cr>
 nnoremap <C-S-P> :bnext<Cr>
 map <C-n> :NERDTreeToggle<CR>
 map <F8> :TagbarToggle<CR>
-
-
-" Neomake
-call neomake#configure#automake('w') " run on save
-" Full config: when writing or reading a buffer, and on changes in insert and
-"call neomake#configure#automake('nrwi', 500)
 
 " TAGBAR
 nmap <C-b> :TagbarToggle<CR>
@@ -348,12 +349,14 @@ nnoremap tp :tabprevious<Cr>
 nnoremap tc :tabnew<Cr>
 nnoremap tx :tabclose<Cr>
 
+nnoremap bn :bn<Cr>
+nnoremap bp :bp<Cr>
 let g:neosnippet#enable_completed_snippet=1
 
 "Latex Tex Wrapping
 
 " toggle wrapping with \w
-noremap <silent> <Leader>w :call ToggleWrap()<CR>
+"noremap <silent> <Leader>w :call ToggleWrap()<CR>
 function! ToggleWrap()
   if &wrap
     echo "Wrap OFF"
@@ -401,3 +404,106 @@ if &wrap
   call WrapIt()
 endif
 autocmd BufRead,BufNewFile *.tex call WrapIt()
+
+" ================ Turn Off Swap Files ==============
+set noswapfile
+set nobackup
+set nowb
+
+
+"hi Cursor guifg=green guibg=green
+"hi Cursor2 guifg=red guibg=red
+"set guicursor=n-v-c:block-Cursor/lCursor,i-ci-ve:ver25-Cursor2/lCursor2,r-cr:hor20,o:hor50
+"au VimLeave * set guicursor=a:block-blinkon0
+
+" provide hjkl movements in Insert mode via the <Alt> modifier key
+inoremap <C-h> <C-o>h
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
+inoremap <C-l> <C-o>l
+
+
+" ALE
+let g:ale_linters = {'cpp': ['clang','cppcheck','clangtidy']}
+let g:ale_lint_on_enter = 1
+let g:ale_cpp_cppcheck_options = '--enable=all'
+" Write this in your vimrc file
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+" EASY MOTION:
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+nmap <Leader>e <Plug>(easymotion-overwin-f2)
+" Turn on case insensitive feature
+let g:EasyMotion_smartcase = 1
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+
+" Always show gutter with vim-signature
+let g:SignatureGutterAlwaysOn = 1
+
+" Fix bug with limelight background
+let g:limelight_conceal_ctermfg = 245  " Solarized Base1
+let g:limelight_conceal_guifg = '#8a8a8a'  " Solarized Base1
+
+" Use catkin build for vim-ros
+"let g:ros_build_system = 'catkin-tools'
+
+" DISABLE RANGER KEYBINDINGS
+let g:ranger_map_keys = 0
+
+
+"nnoremap [[ ?{w99[{
+"nnoremap ][ /}b99]}
+"nnoremap ]] j0[[%/{
+"nnoremap [] k$][%?}
+autocmd BufRead,BufNewFile *.tpp setfiletype cpp
+
+"" Org Mode
+""
+"let g:org_heading_shade_leading_stars = 0
+"let g:org_indent = 1
+
+" VIMWIKI
+"
+let g:vimwiki_folding = 'expr'
+let g:vimwiki_hl_headers =1
+let g:vimwiki_list = [{'path': '~/vimwiki/',
+                     \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:pandoc#syntax#conceal#urls=1
+let g:pandoc#syntax#codeblocks#embeds#langs = ["python", "bash=sh","cpp"]
+let g:vim_markdown_fenced_languages = ['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']
+let g:vim_markdown_math = 1
+autocmd BufRead,BufNewFile *.md let g:indentLine_enabled=0
+autocmd BufRead,BufNewFile *.md set wrap
+
+nnoremap <Leader>we :call vimwiki#base#follow_link('vsplit', 0, 1)<CR>
+
+"au TermClose * nested call OnTermClose()
+set ttyfast
+
+" RANGE=R=
+let g:ranger_map_keys = 0
+map <C-n> :Ranger<CR>
+let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
+
+" Open Help in Vertical Split
+cabbrev h vert h
+
+" LaTEX BIZNIZZ
+let g:vimtex_compiler_progname = 'nvr'
+let g:polyglot_disabled = ['latex']
+if !exists('g:deoplete#omni#input_patterns')
+    let g:deoplete#omni#input_patterns = {}
+endif
+let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
+let g:vimtex_complete_close_braces=0
+let g:completor_tex_omni_trigger = g:vimtex#re#deoplete
+let g:vimtex_fold_enabled=1
+"
+""set up default pdf viewer
+autocmd BufRead,BufNewFile *.tex setlocal spell spelllang=en_us
+autocmd BufRead,BufNewFile *.tex let g:indentLine_enabled=0
+let g:vimtex_view_method = 'skim'
