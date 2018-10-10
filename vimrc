@@ -1,14 +1,15 @@
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall | source $MYVIMRC
-endif
+"if empty(glob('~/.vim/autoload/plug.vim'))
+  "silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    "\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  "autocmd VimEnter * PlugInstall | source $MYVIMRC
+"endif
 
 call plug#begin('~/.vim/plugged')
 "
 " Git Tools
   Plug 'tpope/vim-fugitive'
   Plug 'airblade/vim-gitgutter'
+  Plug 'christoomey/vim-conflicted'
 
 " Navigation, tools, misc.
 "
@@ -33,7 +34,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'zchee/deoplete-jedi'
   Plug 'zchee/deoplete-clang'
   Plug 'Shougo/neoinclude.vim'
-  Plug 'ludovicchabant/vim-gutentags', {'tag':'v1.0.0'} " Autogenerate ctags
+  " Plug 'ludovicchabant/vim-gutentags'" Autogenerate ctags
+  "Plug 'ludovicchabant/vim-gutentags', {'tag':'v1.0.0'} " Autogenerate ctags
 
 " Snippets
   Plug 'honza/vim-snippets'
@@ -53,12 +55,13 @@ call plug#begin('~/.vim/plugged')
   Plug 'sheerun/vim-polyglot'
 
 " Specifice Filetype tools
-  Plug 'taketwo/vim-ros'
+  "Plug 'taketwo/vim-ros'
   Plug 'lervag/vimtex'
   Plug 'lazywei/vim-matlab'
   Plug 'mindriot101/vim-yapf'
   Plug 'sbdchd/neoformat'
   Plug 'w0rp/ale'
+  Plug 'vim-scripts/a.vim'
 
   " Vim Latex
   "Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
@@ -121,7 +124,7 @@ if has("unix")
     let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
   else
     "let g:chromatica#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
-    let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
+    let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so.1'
     let g:deoplete#sources#clang#clang_header='/usr/lib/llvm-3.8/lib/clang'
   endif
 endif
@@ -140,7 +143,7 @@ let g:cpp_member_variable_highlight = 1
 
 " OPEN VIMRC IN HORIZONTAL SPLIT
 " mapping that opens .vimrc in a split for quick editing
-nnoremap <leader>ev :vsplit $HOME/.vim/vimrc<CR>
+nnoremap <leader>ev :tabedit $HOME/.vim/vimrc<CR>
 " mapping that sources the vimrc in the current file
 "nnoremap <leader>sv :source $HOME/.vim/vimrc<CR>
 "
@@ -253,11 +256,11 @@ autocmd BufRead,BufNewFile *.ops setfiletype cpp
 autocmd BufRead,BufNewFile *.msg setfiletype ruby
 autocmd BufRead,BufNewFile *.srv setfiletype ruby
 
-autocmd BufRead,BufNewFile *.cpp set colorcolumn=80
-autocmd BufRead,BufNewFile *.cc set colorcolumn=80
-autocmd BufRead,BufNewFile *.cpp set colorcolumn=80
-autocmd BufRead,BufNewFile *.h set colorcolumn=80
-autocmd BufRead,BufNewFile *.py set colorcolumn=80
+autocmd BufRead,BufNewFile *.cpp set colorcolumn=120
+autocmd BufRead,BufNewFile *.cc set colorcolumn=120
+autocmd BufRead,BufNewFile *.cpp set colorcolumn=120
+autocmd BufRead,BufNewFile *.h set colorcolumn=120
+autocmd BufRead,BufNewFile *.py set colorcolumn=120
 autocmd BufRead,BufNewFile *.tpp set filetype=cpp
 
 autocmd BufRead,BufNewFile m,mat setlocal comments+=:%
@@ -294,7 +297,7 @@ nnoremap <silent> <C-.> <c-w> > <c-w> > <c-w> >
 
 " FZF Key-bindings
 nnoremap <silent> ; :Commands<cr>
-nnoremap <silent> <leader>b :Buffers<cr>
+nnoremap <silent> <leader>b :Buffers <cr>
 nnoremap <silent> <leader>t :Tags<cr>
 nnoremap <silent> <leader>a :Ag<cr>
 nnoremap <silent> <leader>h :History<cr>
@@ -327,16 +330,16 @@ set hidden
 set history=100
 set clipboard+=unnamedplus
 
-" Colored line for 80 characters in column
-"set colorcolumn=80
+" Colored line for 120 characters in column
+"set colorcolumn=120
 
 nnoremap <C-P> :bnext<Cr>
 nnoremap <C-S-P> :bnext<Cr>
-map <C-n> :NERDTreeToggle<CR>
+map <C-b> :NERDTreeToggle<CR>
 map <F8> :TagbarToggle<CR>
 
 " TAGBAR
-nmap <C-b> :TagbarToggle<CR>
+nmap <C-n> :TagbarToggle<CR>
 
 " Search and replace word under cursor with Far \s, then replace the words with
 " \r
@@ -424,9 +427,10 @@ inoremap <C-l> <C-o>l
 
 
 " ALE
-let g:ale_linters = {'cpp': ['clang','cppcheck','clangtidy']}
+let g:ale_linters = {'cpp': ['clang','cppcheck','clangtidy','cpplint']}
 let g:ale_lint_on_enter = 1
 let g:ale_cpp_cppcheck_options = '--enable=all'
+let g:ale_cpp_cpplint_options = '--linelength=120'
 " Write this in your vimrc file
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
@@ -485,9 +489,9 @@ nnoremap <Leader>we :call vimwiki#base#follow_link('vsplit', 0, 1)<CR>
 set ttyfast
 
 " RANGE=R=
-let g:ranger_map_keys = 0
-map <C-n> :Ranger<CR>
-let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
+"let g:ranger_map_keys = 0
+"map <C-n> :Ranger<CR>
+"let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
 
 " Open Help in Vertical Split
 cabbrev h vert h
@@ -507,3 +511,25 @@ let g:vimtex_fold_enabled=1
 autocmd BufRead,BufNewFile *.tex setlocal spell spelllang=en_us
 autocmd BufRead,BufNewFile *.tex let g:indentLine_enabled=0
 let g:vimtex_view_method = 'skim'
+
+"" A.Vim variables
+let g:alternateSearchPath = 'sfr:../../src,sfr:../source,sfr:../src,sfr:../include,sfr:../inc'
+let g:alternateExtensions_h = "cc,cpp,c,cxx,CC"
+
+
+"" Vim Gutentags
+let g:gutentags_project_root=['.tag_root']
+let g:gutentags_exclude_project_root=['/usr/local','~/driving']
+""  Neovim
+"let g:neoformat_c_clang_format = {
+          "\ 'exe': 'clang-format',
+          "\ 'args': ['--style=Google'],
+          "\ }
+let g:neoformat_cpp_clang_format = {
+          \ 'exe': 'clang-format-4.0',
+          \ 'args': ['--style=file'],
+          \ }
+"let g:neoformat_enabled_c = ['clang_format']
+"let g:neoformat_enabled_cpp = ['clang_format']
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
