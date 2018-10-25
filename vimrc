@@ -30,12 +30,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-repeat'
 " Text Completion
 "
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'zchee/deoplete-jedi'
-  Plug 'zchee/deoplete-clang'
-  Plug 'Shougo/neoinclude.vim'
-  " Plug 'ludovicchabant/vim-gutentags'" Autogenerate ctags
-  "Plug 'ludovicchabant/vim-gutentags', {'tag':'v1.0.0'} " Autogenerate ctags
+  Plug 'Valloric/YouCompleteMe'
 
 " Snippets
   Plug 'honza/vim-snippets'
@@ -60,13 +55,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'lazywei/vim-matlab'
   Plug 'mindriot101/vim-yapf'
   Plug 'sbdchd/neoformat'
-  Plug 'w0rp/ale'
   Plug 'vim-scripts/a.vim'
 
   " Vim Latex
-  "Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
   Plug 'lervag/vimtex'
-  "Plug 'donRaphaco/neotex'
   Plug 'mhinz/neovim-remote' " Needed for Vimtex
 
 " Org Mode
@@ -102,64 +94,19 @@ let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
 let g:UltiSnipsSnippetDirectories=["UltiSnips",$HOME.'/.vim/custom_snippets']
 let g:UltiSnipsSnippetsDir=$HOME.'/.vim/custom_snippets'
 
-"
-" DEOPLETE AND CODE COMPLETION SETTINGS
-" NEOMAKE
-let g:deoplete#enable_at_startup = 1
-" Use tab to cycle through list
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-let g:deoplete#enable_smart_case = 1
+" YouCompleteMe Settings
+let g:ycm_extra_conf_globlist = ['~/*']
+nnoremap <leader>g :YcmCompleter GoTo<CR>
+set pumheight=6
 
-" Disable the candidates in Comment/String syntaxes.
-call deoplete#custom#source('_',
-            \ 'disabled_syntaxes', ['Comment', 'String'])
-
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-
-if has("unix")
-  if system('uname')=~'Darwin'
-    "let g:chromatica#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
-    let g:deoplete#sources#clang#libclang_path='/usr/local/Cellar/llvm/5.0.0/lib/libclang.dylib'
-    let g:deoplete#sources#clang#clang_header='/usr/local/Cellar/llvm/5.0.0/lib/clang'
-  else
-    "let g:chromatica#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so'
-    let g:deoplete#sources#clang#libclang_path='/usr/lib/llvm-3.8/lib/libclang.so.1'
-    let g:deoplete#sources#clang#clang_header='/usr/lib/llvm-3.8/lib/clang'
-  endif
-endif
-
-" DEOPLETE
-
-
+" autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 "  C++ Syntax Highlighting
 "
-"let g:cpp_no_function_highlight = 1
 let g:cpp_member_variable_highlight = 1
-"let g:cpp_experimental_template_highlight=1
-"let g:cpp_experimental_template_highlight = 1
-"let g:cpp_concepts_highlight = 1
 
-" OPEN VIMRC IN HORIZONTAL SPLIT
-" mapping that opens .vimrc in a split for quick editing
+" OPEN VIMRC
 nnoremap <leader>ev :tabedit $HOME/.vim/vimrc<CR>
-" mapping that sources the vimrc in the current file
-"nnoremap <leader>sv :source $HOME/.vim/vimrc<CR>
-"
-" Clang format - auto formatting
-
-
-"let g:clang_format#command = 'clang-format'
-"let g:clang_format#style_options = {
-            "\ "BreakBeforeBraces" : "Attach",
-            "\ "UseTab" : "Never",
-            "\ "IndentWidth" : 4,
-            "\ "ColumnLimit" : 100,
-            "\ "AccessModifierOffset" : -4,
-            "\ "AllowShortIfStatementsOnASingleLine" : "false",
-            "\ "AllowShortFunctionsOnASingleLine" : "false",
-            "\}
 
 "
 "Airline Settings
@@ -169,8 +116,6 @@ set laststatus=2
 let g:airline_theme='kalisi'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
-
-
 " Get rid of encoding
 let g:airline_section_y=''
 let g:bufferline_echo = 0
@@ -184,12 +129,7 @@ let g:airline_powerline_fonts = 1
 let g:better_whitespace_enabled=1
 let g:strip_whitespace_on_save=1
 
-"netrw = NERDTREE OH SHIT
-"let g:NERDTreeQuitOnOpen = 1
-" nerdtree open default if vim opened without file
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-
+" Netrw prettiness
 let g:netrw_liststyle=3         " tree (change to 0 for thin)
 let g:netrw_banner=0            " no banner
 "let g:netrw_altv=1              " open files on right
@@ -199,7 +139,6 @@ set t_Co=256
 set cinoptions=g0
 set cino+=(0,W4,t0
 set complete=.,w,b,u,t,i
-
 
 "" Function to reverse background
 function! ReverseBackground()
@@ -211,8 +150,7 @@ function! ReverseBackground()
 endfunction
 command! RevBG call ReverseBackground()
 
-" Fix background color on gui vim
-"let g:solarized_termcolors=256
+" COLORSCHEMES
 "colorscheme NeoSolarized
 colorscheme kalisi
 "set bg=light
@@ -234,12 +172,12 @@ set nosmartindent
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
-
 set nu
 set ruler
-
 set nowrap
 set hlsearch
+
+" Avoid those cached tmp files
 set backupdir=~/.vim/backup
 
 " Set the filetypes correctly
@@ -272,14 +210,13 @@ source $VIMRUNTIME/macros/matchit.vim
 autocmd BufEnter *.m    compiler mlint
 
 "Zenmode
-nnoremap <silent> <leader>g :Goyo<cr>
 let g:goyo_margin_top = 2
 let g:goyo_margin_bottom = 2
 let g:goyo_width = 81
 autocmd! User GoyoEnter Limelight
 autocmd! User GoyoLeave Limelight!
 
-""Only apple shit:
+""Only apple stuff:
 "let g:Tex_TreatMacViewerAsUNIX = 1
 "let g:Tex_ViewRule_pdf = 'open -a Preview'
 "let g:Tex_ViewRule_dvi = 'open -a xdvi'
@@ -299,7 +236,7 @@ nnoremap <silent> <C-.> <c-w> > <c-w> > <c-w> >
 nnoremap <silent> ; :Commands<cr>
 nnoremap <silent> <leader>b :Buffers <cr>
 nnoremap <silent> <leader>t :Tags<cr>
-nnoremap <silent> <leader>a :Ag<cr>
+nnoremap <silent> <leader>a :A<cr>
 nnoremap <silent> <leader>h :History<cr>
 nnoremap <silent> <leader>f :Files<CR>
 "map <silent> ; :Commands<cr>
@@ -319,10 +256,13 @@ inoremap <C-space> <esc>
 
 nnoremap <leader>y :Neoformat<cr>
 tnoremap <Esc> <C-\><C-n>
+
+"" TMuxinator navigation settings
 tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
 tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
 tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+
 "
 ""ctrl-space
 set hidden
@@ -499,12 +439,7 @@ cabbrev h vert h
 " LaTEX BIZNIZZ
 let g:vimtex_compiler_progname = 'nvr'
 let g:polyglot_disabled = ['latex']
-if !exists('g:deoplete#omni#input_patterns')
-    let g:deoplete#omni#input_patterns = {}
-endif
-let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
 let g:vimtex_complete_close_braces=0
-let g:completor_tex_omni_trigger = g:vimtex#re#deoplete
 let g:vimtex_fold_enabled=1
 "
 ""set up default pdf viewer
