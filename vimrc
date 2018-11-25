@@ -28,6 +28,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'francoiscabrol/ranger.vim'
   Plug 'rbgrouleff/bclose.vim'
   Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-unimpaired'
 " Text Completion
 "
   Plug 'Valloric/YouCompleteMe'
@@ -56,7 +57,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'mindriot101/vim-yapf'
   Plug 'sbdchd/neoformat'
   Plug 'vim-scripts/a.vim'
-
+  Plug 'sakhnik/nvim-gdb'
+  Plug 'idanarye/vim-vebugger'
+  Plug 'Shougo/vimproc.vim', {'do' : 'make'}
   " Vim Latex
   Plug 'lervag/vimtex'
   Plug 'mhinz/neovim-remote' " Needed for Vimtex
@@ -243,6 +246,7 @@ nnoremap <silent> <leader>f :Files<CR>
 
 set splitbelow
 set splitright
+set diffopt+=vertical
 
 "Enable folding with spacebar
 inoremap <C-s> <esc>:w!<CR>
@@ -284,7 +288,7 @@ nmap <C-n> :TagbarToggle<CR>
 " Search and replace word under cursor with Far \s, then replace the words with
 " \r
 nnoremap <leader>s :Far <c-r><c-w> <c-r><c-w>
-nnoremap <leader>r :Fardo<Cr>:q<Cr>
+" nnoremap <leader>r :Fardo<Cr>:q<Cr>
 
 " TAB KEYBINDINGS
 nnoremap tn :tabNext<Cr>
@@ -431,7 +435,8 @@ set ttyfast
 " RANGE=R=
 "let g:ranger_map_keys = 0
 "map <C-n> :Ranger<CR>
-"let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
+nnoremap <leader>r :Ranger<Cr>
+let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
 
 " Open Help in Vertical Split
 cabbrev h vert h
@@ -468,3 +473,13 @@ let g:neoformat_cpp_clang_format = {
 "let g:neoformat_enabled_cpp = ['clang_format']
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
+
+" nvim-gdb
+" let g:nvimgdb_config_override = {
+  " \ 'key_next': 'n',
+  " \ 'key_step': 's',
+  " \ 'key_finish': 'f',
+  " \ 'key_continue': 'c',
+  " \ 'key_until': 'u',
+  " \ 'key_breakpoint': 'b',
+  " \ }
