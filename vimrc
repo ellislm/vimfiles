@@ -8,29 +8,28 @@ call plug#begin('~/.vim/plugged')
 "
 " Git Tools
   Plug 'tpope/vim-fugitive'
-  Plug 'airblade/vim-gitgutter'
-  Plug 'christoomey/vim-conflicted'
+  " Plug 'airblade/vim-gitgutter'
+  " Plug 'christoomey/vim-conflicted'
 
 " Navigation, tools, misc.
 "
   Plug 'tpope/vim-surround'
-  Plug 'scrooloose/nerdcommenter'
   Plug 'ntpeters/vim-better-whitespace'
   Plug 'christoomey/vim-tmux-navigator'
   Plug 'tmhedberg/SimpylFold'
-  Plug 'brooth/far.vim' " Search and Replace
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
   Plug 'majutsushi/tagbar'
   Plug 'scrooloose/nerdtree'
   Plug 'easymotion/vim-easymotion'
-  Plug 'hetmankp/vim-signature'
+  Plug 'hetmankp/vim-signature' " Show 'marks' in number column
   Plug 'francoiscabrol/ranger.vim'
   Plug 'rbgrouleff/bclose.vim'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-unimpaired'
+  Plug 'tpope/vim-commentary'
+
 " Text Completion
-"
   Plug 'Valloric/YouCompleteMe'
 
 " Snippets
@@ -38,48 +37,33 @@ call plug#begin('~/.vim/plugged')
   Plug 'SirVer/ultisnips'
 
 " Themes and Aesthetics
-  Plug 'junegunn/goyo.vim'
-  Plug 'junegunn/limelight.vim'
-  Plug 'morhetz/gruvbox'
-  Plug 'bling/vim-bufferline'
+  Plug 'bling/vim-bufferline' " Shows open buffers on airline
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'Yggdroot/indentLine' " vertical lines for indent
-  Plug 'freeo/vim-kalisi'
+  Plug 'freeo/vim-kalisi' " Vim Theme
 
 " Syntax Highlighting for all Languages
   Plug 'sheerun/vim-polyglot'
 
 " Specifice Filetype tools
-  "Plug 'taketwo/vim-ros'
   Plug 'lervag/vimtex'
   Plug 'lazywei/vim-matlab'
   Plug 'mindriot101/vim-yapf'
   Plug 'sbdchd/neoformat'
   Plug 'vim-scripts/a.vim'
-  Plug 'sakhnik/nvim-gdb'
-  Plug 'idanarye/vim-vebugger'
-  Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-  " Vim Latex
+  Plug 'rust-lang/rust.vim'
+
+" Vim Latex
   Plug 'lervag/vimtex'
   Plug 'mhinz/neovim-remote' " Needed for Vimtex
 
-" Org Mode
-  Plug 'jceb/vim-orgmode'
-  Plug 'vim-scripts/utl.vim'
-  Plug 'mattn/calendar-vim'
-  Plug 'vim-scripts/SyntaxRange'
-  Plug 'tpope/vim-speeddating'
-
 " Vim Wiki
   Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
-  Plug 'vim-pandoc/vim-pandoc-syntax'
-  Plug 'vim-pandoc/vim-pandoc'
-  Plug 'plasticboy/vim-markdown'
-
-" For REPL Support for Python and others
-  Plug 'BurningEther/iron.nvim', {'do': ':UpdateRemotePlugins'}
-
+  Plug 'vimwiki/utils'
+  Plug 'mattn/calendar-vim'
+  Plug 'vim-scripts/utl.vim'
+  Plug 'vim-scripts/SyntaxRange'
 call plug#end()
 
 let g:tmux_navigator_no_mappings = 1
@@ -88,14 +72,12 @@ set nocompatible
 set timeout timeoutlen=3000 ttimeoutlen=100
 set autochdir "set current working dir with open file
 set mouse=a
-"
+
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 set runtimepath+=~/.vim/snippets/
-let g:UltiSnipsExpandTrigger="<leader>u"
-let g:UltiSnipsJumpForwardTrigger="<Tab>"
-let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
-let g:UltiSnipsSnippetDirectories=["UltiSnips",$HOME.'/.vim/custom_snippets']
-let g:UltiSnipsSnippetsDir=$HOME.'/.vim/custom_snippets'
+let g:UltiSnipsExpandTrigger="<C-g>"
+let g:UltiSnipsJumpForwardTrigger="<C-g>"
+let g:UltiSnipsJumpBackwardTrigger="<C-a>"
 
 " YouCompleteMe Settings
 let g:ycm_extra_conf_globlist = ['~/*']
@@ -109,7 +91,7 @@ set pumheight=6
 let g:cpp_member_variable_highlight = 1
 
 " OPEN VIMRC
-nnoremap <leader>ev :tabedit $HOME/.vim/vimrc<CR>
+nnoremap <leader>v :tabedit $HOME/.vim/vimrc<CR>
 
 "
 "Airline Settings
@@ -204,6 +186,9 @@ autocmd BufRead,BufNewFile *.h set colorcolumn=120
 autocmd BufRead,BufNewFile *.py set colorcolumn=120
 autocmd BufRead,BufNewFile *.tpp set filetype=cpp
 
+" Set correct commenting in cpp files
+autocmd FileType c,cpp,cs,java setlocal commentstring=//\ %s
+
 autocmd BufRead,BufNewFile m,mat setlocal comments+=:%
 au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
 
@@ -212,41 +197,18 @@ filetype plugin indent on
 source $VIMRUNTIME/macros/matchit.vim
 autocmd BufEnter *.m    compiler mlint
 
-"Zenmode
-let g:goyo_margin_top = 2
-let g:goyo_margin_bottom = 2
-let g:goyo_width = 81
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+set splitbelow
+set splitright
+set diffopt+=vertical
 
-""Only apple stuff:
-"let g:Tex_TreatMacViewerAsUNIX = 1
-"let g:Tex_ViewRule_pdf = 'open -a Preview'
-"let g:Tex_ViewRule_dvi = 'open -a xdvi'
-
-"split navigations
-nnoremap <silent> <p> "+y
-nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
-nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 4/3)<CR>
-nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 3/4)<CR>
-nnoremap <silent> <C-,> <c-w> < <c-w> < <c-w> <
-nnoremap <silent> <C-.> <c-w> > <c-w> > <c-w> >
 
 " FZF Key-bindings
 nnoremap <silent> ; :Commands<cr>
 nnoremap <silent> <leader>b :Buffers <cr>
 nnoremap <silent> <leader>t :Tags<cr>
-nnoremap <silent> <leader>a :A<cr>
 nnoremap <silent> <leader>h :History<cr>
 nnoremap <silent> <leader>f :Files<CR>
-"map <silent> ; :Commands<cr>
-
-set splitbelow
-set splitright
-set diffopt+=vertical
+nnoremap <silent> <leader>a :A<cr>
 
 "Enable folding with spacebar
 inoremap <C-s> <esc>:w!<CR>
@@ -256,39 +218,38 @@ nnoremap <Leader><Tab> :call VexToggle(getcwd())<CR>
 map <C-p> "+p
 map <C-c> "+y
 
+" Misc Mappings
 inoremap <C-space> <esc>
+nnoremap <silent> <p> "+y
 
-nnoremap <leader>y :Neoformat<cr>
-tnoremap <Esc> <C-\><C-n>
 
 "" TMuxinator navigation settings
+nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
+
+" NVim terminal bindings
+tnoremap <Esc> <C-\><C-n>
 tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
 tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
 tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
 
-"
-""ctrl-space
-set hidden
 
-set history=100
-set clipboard+=unnamedplus
+""ctrl-space
+" set hidden
+" set history=100
+" set clipboard+=unnamedplus
 
 " Colored line for 120 characters in column
-"set colorcolumn=120
+set colorcolumn=120
 
-nnoremap <C-P> :bnext<Cr>
-nnoremap <C-S-P> :bnext<Cr>
+
+" Nerdtree/Tab Toggle
 map <C-b> :NERDTreeToggle<CR>
-map <F8> :TagbarToggle<CR>
-
-" TAGBAR
 nmap <C-n> :TagbarToggle<CR>
-
-" Search and replace word under cursor with Far \s, then replace the words with
-" \r
-nnoremap <leader>s :Far <c-r><c-w> <c-r><c-w>
-" nnoremap <leader>r :Fardo<Cr>:q<Cr>
+nnoremap <leader>y :Neoformat<cr>
 
 " TAB KEYBINDINGS
 nnoremap tn :tabNext<Cr>
@@ -296,14 +257,11 @@ nnoremap tp :tabprevious<Cr>
 nnoremap tc :tabnew<Cr>
 nnoremap tx :tabclose<Cr>
 
+" Buffer next and previous
 nnoremap bn :bn<Cr>
 nnoremap bp :bp<Cr>
-let g:neosnippet#enable_completed_snippet=1
 
-"Latex Tex Wrapping
-
-" toggle wrapping with \w
-"noremap <silent> <Leader>w :call ToggleWrap()<CR>
+" Line Wrapping Function
 function! ToggleWrap()
   if &wrap
     echo "Wrap OFF"
@@ -350,69 +308,36 @@ endfunction
 if &wrap
   call WrapIt()
 endif
+
 autocmd BufRead,BufNewFile *.tex call WrapIt()
 
-" ================ Turn Off Swap Files ==============
+" Turn Off Swap Files (.swap)
 set noswapfile
 set nobackup
 set nowb
 
-
-"hi Cursor guifg=green guibg=green
-"hi Cursor2 guifg=red guibg=red
-"set guicursor=n-v-c:block-Cursor/lCursor,i-ci-ve:ver25-Cursor2/lCursor2,r-cr:hor20,o:hor50
-"au VimLeave * set guicursor=a:block-blinkon0
-
-" provide hjkl movements in Insert mode via the <Alt> modifier key
+" provide hjkl movements in Insert mode via the <Ctrl> modifier key
 inoremap <C-h> <C-o>h
 inoremap <C-j> <C-o>j
 inoremap <C-k> <C-o>k
 inoremap <C-l> <C-o>l
 
-
-" ALE
-let g:ale_linters = {'cpp': ['clang','cppcheck','clangtidy','cpplint']}
-let g:ale_lint_on_enter = 1
-let g:ale_cpp_cppcheck_options = '--enable=all'
-let g:ale_cpp_cpplint_options = '--linelength=120'
 " Write this in your vimrc file
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
+
 " EASY MOTION:
+"
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " Jump to anywhere you want with minimal keystrokes, with just one key binding.
-" `s{char}{label}`
 nmap <Leader>e <Plug>(easymotion-overwin-f2)
+
 " Turn on case insensitive feature
 let g:EasyMotion_smartcase = 1
+
 " JK motions: Line motions
 map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
-
-" Always show gutter with vim-signature
-let g:SignatureGutterAlwaysOn = 1
-
-" Fix bug with limelight background
-let g:limelight_conceal_ctermfg = 245  " Solarized Base1
-let g:limelight_conceal_guifg = '#8a8a8a'  " Solarized Base1
-
-" Use catkin build for vim-ros
-"let g:ros_build_system = 'catkin-tools'
-
-" DISABLE RANGER KEYBINDINGS
-let g:ranger_map_keys = 0
-
-
-"nnoremap [[ ?{w99[{
-"nnoremap ][ /}b99]}
-"nnoremap ]] j0[[%/{
-"nnoremap [] k$][%?}
-autocmd BufRead,BufNewFile *.tpp setfiletype cpp
-
-"" Org Mode
-""
-"let g:org_heading_shade_leading_stars = 0
-"let g:org_indent = 1
 
 " VIMWIKI
 "
@@ -424,62 +349,47 @@ let g:pandoc#syntax#conceal#urls=1
 let g:pandoc#syntax#codeblocks#embeds#langs = ["python", "bash=sh","cpp"]
 let g:vim_markdown_fenced_languages = ['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']
 let g:vim_markdown_math = 1
+
 autocmd BufRead,BufNewFile *.md let g:indentLine_enabled=0
 autocmd BufRead,BufNewFile *.md set wrap
-
+" Open a Vim Wiki link in a split
 nnoremap <Leader>we :call vimwiki#base#follow_link('vsplit', 0, 1)<CR>
 
-"au TermClose * nested call OnTermClose()
-set ttyfast
 
-" RANGE=R=
-"let g:ranger_map_keys = 0
-"map <C-n> :Ranger<CR>
+"au TermClose * nested call OnTermClose()
+" set ttyfast " Fix bug?
+
+" RANGER=
+let g:ranger_map_keys = 0
 nnoremap <leader>r :Ranger<Cr>
 let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
 
 " Open Help in Vertical Split
 cabbrev h vert h
 
-" LaTEX BIZNIZZ
-let g:vimtex_compiler_progname = 'nvr'
-let g:polyglot_disabled = ['latex']
-let g:vimtex_complete_close_braces=0
-let g:vimtex_fold_enabled=1
-"
-""set up default pdf viewer
-autocmd BufRead,BufNewFile *.tex setlocal spell spelllang=en_us
-autocmd BufRead,BufNewFile *.tex let g:indentLine_enabled=0
-let g:vimtex_view_method = 'skim'
-
 "" A.Vim variables
 let g:alternateSearchPath = 'sfr:../../src,sfr:../source,sfr:../src,sfr:../include,sfr:../inc'
 let g:alternateExtensions_h = "cc,cpp,c,cxx,CC"
 
+" YouCompleteMe
+cabbrev Gdef YcmCompleter GoToDefinition
 
-"" Vim Gutentags
-let g:gutentags_project_root=['.tag_root']
-let g:gutentags_exclude_project_root=['/usr/local','~/driving']
 ""  Neovim
 "let g:neoformat_c_clang_format = {
           "\ 'exe': 'clang-format',
           "\ 'args': ['--style=Google'],
           "\ }
 let g:neoformat_cpp_clang_format = {
-          \ 'exe': 'clang-format-4.0',
+          \ 'exe': 'clang-format',
           \ 'args': ['--style=file'],
           \ }
-"let g:neoformat_enabled_c = ['clang_format']
-"let g:neoformat_enabled_cpp = ['clang_format']
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
 
-" nvim-gdb
-" let g:nvimgdb_config_override = {
-  " \ 'key_next': 'n',
-  " \ 'key_step': 's',
-  " \ 'key_finish': 'f',
-  " \ 'key_continue': 'c',
-  " \ 'key_until': 'u',
-  " \ 'key_breakpoint': 'b',
-  " \ }
+" RUST
+let g:rustfmt_autosave = 1
+
+" Neoformat
+" format on save
+augroup fmt
+  autocmd!
+  autocmd BufWritePre * undojoin | Neoformat
+augroup END
