@@ -1,15 +1,8 @@
-"if empty(glob('~/.vim/autoload/plug.vim'))
-  "silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    "\ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  "autocmd VimEnter * PlugInstall | source $MYVIMRC
-"endif
-
 call plug#begin('~/.vim/plugged')
 "
 " Git Tools
   Plug 'tpope/vim-fugitive'
-  " Plug 'airblade/vim-gitgutter'
-  " Plug 'christoomey/vim-conflicted'
+  Plug 'airblade/vim-gitgutter'
 
 " Navigation, tools, misc.
 "
@@ -28,13 +21,21 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-unimpaired'
   Plug 'tpope/vim-commentary'
+  Plug 'brooth/far.vim'
+  Plug 'tommcdo/vim-exchange'
 
 " Text Completion
-  Plug 'Valloric/YouCompleteMe'
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'Shougo/echodoc.vim'
+  Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 " Snippets
   Plug 'honza/vim-snippets'
   Plug 'SirVer/ultisnips'
+  Plug 'morhetz/gruvbox'
 
 " Themes and Aesthetics
   Plug 'bling/vim-bufferline' " Shows open buffers on airline
@@ -53,6 +54,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'sbdchd/neoformat'
   Plug 'vim-scripts/a.vim'
   Plug 'rust-lang/rust.vim'
+  " Plug 'w0rp/ale'
+  Plug 'neomake/neomake'
+  " Plug 'sakhnik/nvim-gdb', {'commit' : '40ec8cc58e8833b2c1b1e11c4ab9fbb558a7d5a2', 'do': ':!./install.sh \| UpdateRemotePlugins' }
+  " Plug 'gilligan/vim-lldb'
 
 " Vim Latex
   Plug 'lervag/vimtex'
@@ -72,22 +77,20 @@ set nocompatible
 set timeout timeoutlen=3000 ttimeoutlen=100
 set autochdir "set current working dir with open file
 set mouse=a
+"Get rid of the pesky ex mdoe
+nnoremap Q <NOP>
 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 set runtimepath+=~/.vim/snippets/
 let g:UltiSnipsExpandTrigger="<C-g>"
 let g:UltiSnipsJumpForwardTrigger="<C-g>"
 let g:UltiSnipsJumpBackwardTrigger="<C-a>"
 
-" YouCompleteMe Settings
-let g:ycm_extra_conf_globlist = ['~/*']
-nnoremap <leader>g :YcmCompleter GoTo<CR>
-set pumheight=6
-
-" autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+" " YouCompleteMe Settings
+" let g:ycm_extra_conf_globlist = ['~/*']
+" nnoremap <leader>g :YcmCompleter GoTo<CR>
+" let g:enable_ycm_at_startup = 0
 
 "  C++ Syntax Highlighting
-"
 let g:cpp_member_variable_highlight = 1
 
 " OPEN VIMRC
@@ -136,11 +139,11 @@ endfunction
 command! RevBG call ReverseBackground()
 
 " COLORSCHEMES
-"colorscheme NeoSolarized
+" colorscheme NeoSolarized
 colorscheme kalisi
 "set bg=light
 "colorscheme brogrammer
-"colorscheme gruvbox
+" colorscheme gruvbox
 
 au ColorScheme * hi Normal ctermbg=none guibg=none
 au ColorScheme myspecialcolors hi Normal ctermbg=red guibg=red
@@ -204,7 +207,7 @@ set diffopt+=vertical
 
 " FZF Key-bindings
 nnoremap <silent> ; :Commands<cr>
-nnoremap <silent> <leader>b :Buffers <cr>
+nnoremap <silent> <leader>bb :Buffers <cr>
 nnoremap <silent> <leader>t :Tags<cr>
 nnoremap <silent> <leader>h :History<cr>
 nnoremap <silent> <leader>f :Files<CR>
@@ -219,7 +222,7 @@ map <C-p> "+p
 map <C-c> "+y
 
 " Misc Mappings
-inoremap <C-space> <esc>
+" inoremap <C-space> <esc>
 nnoremap <silent> <p> "+y
 
 
@@ -237,13 +240,9 @@ tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
 
 
-""ctrl-space
-" set hidden
-" set history=100
-" set clipboard+=unnamedplus
-
-" Colored line for 120 characters in column
-set colorcolumn=120
+set hidden
+set history=10000 " Set history length.
+set clipboard+=unnamedplus
 
 
 " Nerdtree/Tab Toggle
@@ -330,7 +329,7 @@ let g:ale_set_quickfix = 1
 "
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " Jump to anywhere you want with minimal keystrokes, with just one key binding.
-nmap <Leader>e <Plug>(easymotion-overwin-f2)
+nmap f <Plug>(easymotion-overwin-f2)
 
 " Turn on case insensitive feature
 let g:EasyMotion_smartcase = 1
@@ -351,10 +350,11 @@ let g:vim_markdown_fenced_languages = ['c++=cpp', 'viml=vim', 'bash=sh', 'ini=do
 let g:vim_markdown_math = 1
 
 autocmd BufRead,BufNewFile *.md let g:indentLine_enabled=0
-autocmd BufRead,BufNewFile *.md set wrap
+autocmd BufRead,BufNewFile *.md set wrap linebreak nolist
+autocmd BufRead,BufNewFile *.md set colorcolumn=80
+
 " Open a Vim Wiki link in a split
 nnoremap <Leader>we :call vimwiki#base#follow_link('vsplit', 0, 1)<CR>
-
 
 "au TermClose * nested call OnTermClose()
 " set ttyfast " Fix bug?
@@ -371,25 +371,92 @@ cabbrev h vert h
 let g:alternateSearchPath = 'sfr:../../src,sfr:../source,sfr:../src,sfr:../include,sfr:../inc'
 let g:alternateExtensions_h = "cc,cpp,c,cxx,CC"
 
-" YouCompleteMe
-cabbrev Gdef YcmCompleter GoToDefinition
-
 ""  Neovim
-"let g:neoformat_c_clang_format = {
-          "\ 'exe': 'clang-format',
-          "\ 'args': ['--style=Google'],
-          "\ }
 let g:neoformat_cpp_clang_format = {
           \ 'exe': 'clang-format',
           \ 'args': ['--style=file'],
           \ }
-
+let g:neoformat_enabled_python = ['']
 " RUST
 let g:rustfmt_autosave = 1
 
 " Neoformat
 " format on save
-augroup fmt
+" augroup fmt
+"   autocmd!
+"   autocmd BufWritePre * undojoin | Neoformat
+" augroup END
+
+" ALE
+let g:ale_linters = {'cpp' : ['']}
+
+" UltiSnips
+" Set python snippit style to Google
+let g:ultisnips_python_style = "google"
+
+" GitGutter
+"
+" disable key bindings (<Leader>h bindings conflict with :History binding":
+let g:gitgutter_map_keys = 0
+
+" vim-better-whitespace
+let g:better_whitespace_enabled=1
+let g:strip_whitespace_on_save=1
+
+" Tagbar use Universal Ctags
+let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
+
+" Automatically start language servers.
+let g:LanguageClient_autoStart = 1
+"     \ 'cpp': ['/usr/lib/llvm-9/bin/clangd','-compile-commands-dir=/home/loganellis/driving/src/'],
+let g:LanguageClient_serverCommands = {
+    \ 'cpp': ['clangd','-clang-tidy','-compile-commands-dir=/home/loganellis/driving/src','-header-insertion=never'],
+    \ 'rust': ['rls'],
+    \ 'python': ['pyls'],
+    \ }
+
+let g:LanguageClient_serverStderr = '/tmp/clangd.stderr'
+function SetLSPShortcuts()
+  nnoremap md :call LanguageClient#textDocument_definition()<CR>
+  nnoremap mr :call LanguageClient#textDocument_rename()<CR>
+  nnoremap mf :Neoformat<CR>
+  nnoremap mt :call LanguageClient#textDocument_typeDefinition()<CR>
+  nnoremap mx :call LanguageClient#textDocument_references()<CR>
+  nnoremap ma :call LanguageClient_workspace_applyEdit()<CR>
+  nnoremap mc :call LanguageClient#textDocument_completion()<CR>
+  nnoremap mh :call LanguageClient#textDocument_hover()<CR>
+  nnoremap ms :call LanguageClient_textDocument_documentSymbol()<CR>
+  nnoremap mm :call LanguageClient_contextMenu()<CR>
+  nnoremap <leader>ll :call LanguageClient#debugInfo()<CR>
+endfunction()
+call SetLSPShortcuts()
+
+augroup LSP
   autocmd!
-  autocmd BufWritePre * undojoin | Neoformat
+  autocmd FileType cpp,c call SetLSPShortcuts()
+  autocmd FileType rust call SetLSPShortcuts()
 augroup END
+
+" Echodoc to see function signature.
+set cmdheight=2
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#type = 'signature'
+
+" Always draw the signcolumn.
+set signcolumn=yes
+
+" Deoplete
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#source('LanguageClient',
+            \ 'min_pattern_length',
+            \ 1)
+
+" <TAB>: completion.
+set pumheight=6
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" Strip Whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+set nomodeline
