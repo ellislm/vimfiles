@@ -373,8 +373,8 @@ let g:alternateExtensions_h = "cc,cpp,c,cxx,CC"
 
 ""  Neovim
 let g:neoformat_cpp_clang_format = {
-          \ 'exe': 'clang-format',
-          \ 'args': ['--style=file'],
+          \ 'exe': 'clang-format-4.0',
+          \ 'args': ['-style=file'],
           \ }
 let g:neoformat_enabled_python = ['']
 " RUST
