@@ -25,17 +25,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'tommcdo/vim-exchange'
 
 " Text Completion
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'Shougo/echodoc.vim'
-  Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Snippets
   Plug 'honza/vim-snippets'
   Plug 'SirVer/ultisnips'
-  Plug 'morhetz/gruvbox'
 
 " Themes and Aesthetics
   Plug 'bling/vim-bufferline' " Shows open buffers on airline
@@ -43,6 +37,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-airline/vim-airline-themes'
   Plug 'Yggdroot/indentLine' " vertical lines for indent
   Plug 'freeo/vim-kalisi' " Vim Theme
+  Plug 'tomasr/molokai'
+  Plug 'crusoexia/vim-monokai'
+  Plug 'morhetz/gruvbox'
 
 " Syntax Highlighting for all Languages
   Plug 'sheerun/vim-polyglot'
@@ -54,21 +51,27 @@ call plug#begin('~/.vim/plugged')
   Plug 'sbdchd/neoformat'
   Plug 'vim-scripts/a.vim'
   Plug 'rust-lang/rust.vim'
-  " Plug 'w0rp/ale'
   Plug 'neomake/neomake'
-  " Plug 'sakhnik/nvim-gdb', {'commit' : '40ec8cc58e8833b2c1b1e11c4ab9fbb558a7d5a2', 'do': ':!./install.sh \| UpdateRemotePlugins' }
-  " Plug 'gilligan/vim-lldb'
 
 " Vim Latex
   Plug 'lervag/vimtex'
   Plug 'mhinz/neovim-remote' " Needed for Vimtex
 
 " Vim Wiki
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
   Plug 'vimwiki/vimwiki', { 'branch': 'dev' }
+  Plug 'vim-pandoc/vim-pandoc'
+  Plug 'vim-pandoc/vim-pandoc-syntax'
   Plug 'vimwiki/utils'
   Plug 'mattn/calendar-vim'
   Plug 'vim-scripts/utl.vim'
   Plug 'vim-scripts/SyntaxRange'
+  Plug 'junegunn/goyo.vim'
+  Plug 'junegunn/limelight.vim'
+
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+
 call plug#end()
 
 let g:tmux_navigator_no_mappings = 1
@@ -101,7 +104,7 @@ nnoremap <leader>v :tabedit $HOME/.vim/vimrc<CR>
 "
 let g:airline_powerline_fonts = 1
 set laststatus=2
-let g:airline_theme='kalisi'
+let g:airline_theme='molokai'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#ale#enabled = 1
 " Get rid of encoding
@@ -109,6 +112,7 @@ let g:airline_section_y=''
 let g:bufferline_echo = 0
 let g:airline_powerline_fonts = 1
 
+set statusline^=%{coc#status()}
  if !exists('g:airline_symbols')
      let g:airline_symbols = {}
  endif
@@ -139,11 +143,8 @@ endfunction
 command! RevBG call ReverseBackground()
 
 " COLORSCHEMES
-" colorscheme NeoSolarized
-colorscheme kalisi
+colorscheme monokai
 "set bg=light
-"colorscheme brogrammer
-" colorscheme gruvbox
 
 au ColorScheme * hi Normal ctermbg=none guibg=none
 au ColorScheme myspecialcolors hi Normal ctermbg=red guibg=red
@@ -349,9 +350,11 @@ let g:pandoc#syntax#codeblocks#embeds#langs = ["python", "bash=sh","cpp"]
 let g:vim_markdown_fenced_languages = ['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']
 let g:vim_markdown_math = 1
 
+" Markdown settings
 autocmd BufRead,BufNewFile *.md let g:indentLine_enabled=0
 autocmd BufRead,BufNewFile *.md set wrap linebreak nolist
-autocmd BufRead,BufNewFile *.md set colorcolumn=80
+autocmd BufRead,BufNewFile *.md set colorcolumn=0
+autocmd BufRead,BufNewFile *.md set nonumber
 
 " Open a Vim Wiki link in a split
 nnoremap <Leader>we :call vimwiki#base#follow_link('vsplit', 0, 1)<CR>
@@ -372,23 +375,19 @@ let g:alternateSearchPath = 'sfr:../../src,sfr:../source,sfr:../src,sfr:../inclu
 let g:alternateExtensions_h = "cc,cpp,c,cxx,CC"
 
 ""  Neovim
-let g:neoformat_cpp_clang_format = {
-          \ 'exe': 'clang-format-4.0',
-          \ 'args': ['-style=file'],
+let g:neoformat_cpp_clangformat = {
+          \ 'exe': '/opt/tri/llvm/8.0.0/bin/clang-format',
+          \ 'args': ['--style=file'],
           \ }
-let g:neoformat_enabled_python = ['']
+
+let g:neoformat_python_autopep8 = {
+          \ 'exe': 'autopep8',
+          \ 'args': ['--max-line-length 120 --aggressive --global-config ~/driving/src/utils/setup-pep8.cfg'],
+          \ }
+let g:neoformat_enabled_python = ['autopep8', 'docformatter']
+"
 " RUST
 let g:rustfmt_autosave = 1
-
-" Neoformat
-" format on save
-" augroup fmt
-"   autocmd!
-"   autocmd BufWritePre * undojoin | Neoformat
-" augroup END
-
-" ALE
-let g:ale_linters = {'cpp' : ['']}
 
 " UltiSnips
 " Set python snippit style to Google
@@ -406,57 +405,88 @@ let g:strip_whitespace_on_save=1
 " Tagbar use Universal Ctags
 let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
 
-" Automatically start language servers.
-let g:LanguageClient_autoStart = 1
-"     \ 'cpp': ['/usr/lib/llvm-9/bin/clangd','-compile-commands-dir=/home/loganellis/driving/src/'],
-let g:LanguageClient_serverCommands = {
-    \ 'cpp': ['clangd','-clang-tidy','-compile-commands-dir=/home/loganellis/driving/src','-header-insertion=never'],
-    \ 'rust': ['rls'],
-    \ 'python': ['pyls'],
-    \ }
-
-let g:LanguageClient_serverStderr = '/tmp/clangd.stderr'
-function SetLSPShortcuts()
-  nnoremap md :call LanguageClient#textDocument_definition()<CR>
-  nnoremap mr :call LanguageClient#textDocument_rename()<CR>
-  nnoremap mf :Neoformat<CR>
-  nnoremap mt :call LanguageClient#textDocument_typeDefinition()<CR>
-  nnoremap mx :call LanguageClient#textDocument_references()<CR>
-  nnoremap ma :call LanguageClient_workspace_applyEdit()<CR>
-  nnoremap mc :call LanguageClient#textDocument_completion()<CR>
-  nnoremap mh :call LanguageClient#textDocument_hover()<CR>
-  nnoremap ms :call LanguageClient_textDocument_documentSymbol()<CR>
-  nnoremap mm :call LanguageClient_contextMenu()<CR>
-  nnoremap <leader>ll :call LanguageClient#debugInfo()<CR>
-endfunction()
-call SetLSPShortcuts()
-
-augroup LSP
-  autocmd!
-  autocmd FileType cpp,c call SetLSPShortcuts()
-  autocmd FileType rust call SetLSPShortcuts()
-augroup END
-
-" Echodoc to see function signature.
-set cmdheight=2
-let g:echodoc#enable_at_startup = 1
-let g:echodoc#type = 'signature'
-
 " Always draw the signcolumn.
 set signcolumn=yes
-
-" Deoplete
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#source('LanguageClient',
-            \ 'min_pattern_length',
-            \ 1)
-
-" <TAB>: completion.
-set pumheight=6
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Strip Whitespace on save
 autocmd BufWritePre * :%s/\s\+$//e
 
 set nomodeline
+
+"""
+" COC SETTINGS
+"""
+
+"""""""""
+"" lsp ""
+"""""""""
+
+"" Highlight symbol under cursor on CursorHold
+autocmd CursorMoved * silent call CocActionAsync('highlight')
+
+"" Mapping for running a CodeAction
+nmap <silent> ma <Plug>(coc-codeaction-selected)<CR>
+
+"" Mapping for GoTo Definition/Declaration
+nmap <silent> md <Plug>(coc-definition)
+
+"" Mapping for Find References
+nmap <silent> mR <Plug>(coc-references)<CR>
+
+"" Mapping for Rename
+nmap <silent> mr <Plug>(coc-rename)
+
+"" Mapping for showing Implementation of Interface
+nmap <silent> mi <Plug>(coc-implementation)
+
+"" Mapping for Type Definition
+nmap <silent> mt <Plug>(coc-type-definition)
+
+nmap <silent> mf :Neoformat<CR>
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+let g:neoformat_async = 1
+
+"""
+"" GDB goodness
+"""
+nmap <silent> <leader>gr :GdbRun<Cr>
+nmap <silent> <leader>gb :GdbBreakpointToggle<Cr>
+nmap <silent> <leader>gc :GdbContinue<Cr>
+nmap <silent> <leader>gn :GdbNext<Cr>
+nmap <silent> <leader>gs :GdbStep<Cr>
+
+"""
+" Goyo Goodness
+"""
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+
+" Color name (:help cterm-colors) or ANSI code
+let g:limelight_conceal_ctermfg = 'gray'
+let g:limelight_conceal_ctermfg = 240
+
+" Color name (:help gui-colors) or RGB color
+let g:limelight_conceal_guifg = 'DarkGray'
+let g:limelight_conceal_guifg = '#777777'
+
+" Default: 0.5
+let g:limelight_default_coefficient = 0.7
+
+" Number of preceding/following paragraphs to include (default: 0)
+let g:limelight_paragraph_span = 0
+
+" Beginning/end of paragraph
+"   When there's no empty line between the paragraphs
+"   and each paragraph starts with indentation
+let g:limelight_bop = '^\s'
+let g:limelight_eop = '\ze\n^\s'
+
+" Highlighting priority (default: 10)
+"   Set it to -1 not to overrule hlsearch
+let g:limelight_priority = -1
+
